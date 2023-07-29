@@ -1,0 +1,182 @@
+<!-- my attempt at creating a santorini sandbox -borisqwertz -->
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <title>🏰 Attack Towers Sandbox</title>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="css/main.css">
+
+    <script src="js/jquery/jquery.js"></script>
+    <script src="js/jquery/jquery-ui.min.js"></script>
+    <script src="js/jquery/jquery.ui.touch-punch.min.js"></script>
+    <script src="js/main.js"></script>
+</head>
+
+<body>
+    <div class="row">
+
+        <div class="toolbox">
+            <div class="col-12 buttonDiv">
+                <button id="writeURLButton" title="Writes boardstate and gods into URL">Write in URL</button>
+                <button id="loadBoardButton">Reload from URL</button>
+                <button id="resetButton" title="Resets board and URL">Reset</button>
+                <button id="clearLogButton">Clear log</button>
+                <button id="createShortURLButton" title="Save board into URL and create tinyurl">Create short URL</button>
+                <input type="text" id="textURL" value="ShortURL" readonly>
+                <div class="touchDiv">
+                    <p title="mobile support">Touch?
+                        <input type="radio" id="touchYes" name="touchSupport" value="yes">
+                        <label for="touchYes">yes</label>
+                        <input type="radio" id="touchNo" name="touchSupport" value="no">
+                        <label for="touchNo">no</label>
+                    </p>
+                </div>
+            </div>
+            <br>
+            <div class="col-12 figDiv">
+                <div id="p1">
+                    <img src="images/p1King.svg" alt="p1King" id="p1King" class="figures" data-worker="p1King">
+                    <img src="images/p1Mistery.svg" alt="p1Mistery" id="p1Mistery" class="figures" data-worker="p1Mistery">
+                    <img src="images/p1Pawn.svg" alt="p1Pawn" id="p1Pawn" class="figures" data-worker="p1Pawn">
+                    <img src="images/tower.svg" alt="p1Tower" id="p1Tower" class="figures" data-tower="p1Tower">
+                </div>
+                <div id="p2">
+                    <img src="images/p2King.svg" alt="p2King" id="p2King" class="figures" data-worker="p2King">
+                    <img src="images/p2Mistery.svg" alt="p2Mistery" id="p2Mistery" class="figures" data-worker="p2Mistery">
+                    <img src="images/p2Pawn.svg" alt="p2Pawn" id="p2Pawn" class="figures" data-worker="p2Pawn">
+                    <img src="images/tower.svg" alt="p2Tower" id="p2Tower" class="figures" data-tower="p2Tower">
+                </div>
+            </div>
+
+            <div class="col-12 logDiv">
+                <br>
+                <textarea name="moveText" id="moveText" cols="35" rows="11" autocomplete="off">Gamelog:</textarea>
+            </div>
+
+            <div class="col-12 hidden">
+                <br>
+                <label for="gods" title="Select god/hero and click the player button to match">Select Gods:</label>
+                <select name="gods" id="godslist">
+                    <option>Mortal</option>
+                    <optgroup label="Gods"></optgroup>
+                    <option>Aeolus</option>
+                </select>
+                <br>
+                <button id="p1Button">Player 1</button>
+                <button id="p2Button">Player 2</button>
+                <br>
+                <br>
+                <a href="https://en.doc.boardgamearena.com/Gamehelpsantorini#List_of_Powers_(64)"
+                    title="List of gods available on boardgamearena" target="_blank">List
+                    of Gods</a>
+            </div>
+        </div>
+
+        <div class="boardDiv">
+            <table class="board" oncontextmenu="return false">
+                <tr>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                <th>6</th>
+                <td id="A6" data-tower="0" data-worker1="0" data-worker2="0" data-worker3="0" data-worker4="0" class="dropZone darkCell corner">
+                    <img src="images/puddle.png" alt="puddle" height="100" width="100">
+                </td>
+                <td id="B6" data-tower="0" data-worker1="0" data-worker2="0" data-worker3="0" data-worker4="0" class="dropZone"></td>
+                <td id="C6" data-tower="0" data-worker1="0" data-worker2="0" data-worker3="0" data-worker4="0" class="dropZone darkCell"></td>
+                <td id="D6" data-tower="0" data-worker1="0" data-worker2="0" data-worker3="0" data-worker4="0" class="dropZone"></td>
+                <td id="E6" data-tower="0" data-worker1="0" data-worker2="0" data-worker3="0" data-worker4="0" class="dropZone darkCell"></td>
+                <td id="F6" data-tower="0" data-worker1="0" data-worker2="0" data-worker3="0" data-worker4="0" class="dropZone corner">
+                    <img src="images/puddle.png" alt="puddle" height="100" width="100">
+                </td>
+                <th></th>
+                </tr>
+
+                <tr>
+                    <th>5</th>
+                    <td id="A5" data-tower="0" data-worker1="0" data-worker2="0" data-worker3="0" data-worker4="0" class="dropZone"></td>
+                    <td id="B5" data-tower="0" data-worker1="0" data-worker2="0" data-worker3="0" data-worker4="0" class="dropZone darkCell"></td>
+                    <td id="C5" data-tower="0" data-worker1="0" data-worker2="0" data-worker3="0" data-worker4="0" class="dropZone"></td>
+                    <td id="D5" data-tower="0" data-worker1="0" data-worker2="0" data-worker3="0" data-worker4="0" class="dropZone darkCell"></td>
+                    <td id="E5" data-tower="0" data-worker1="0" data-worker2="0" data-worker3="0" data-worker4="0" class="dropZone"></td>
+                    <td id="F5" data-tower="0" data-worker1="0" data-worker2="0" data-worker3="0" data-worker4="0" class="dropZone darkCell"></td>
+                    <th></th>
+                </tr>
+
+                <tr>
+                    <th>4</th>
+                    <td id="A4" data-tower="0" data-worker1="0" data-worker2="0" data-worker3="0" data-worker4="0" class="dropZone darkCell"></td>
+                    <td id="B4" data-tower="0" data-worker1="0" data-worker2="0" data-worker3="0" data-worker4="0" class="dropZone"></td>
+                    <td id="C4" data-tower="0" data-worker1="0" data-worker2="0" data-worker3="0" data-worker4="0" class="dropZone darkCell"></td>
+                    <td id="D4" data-tower="0" data-worker1="0" data-worker2="0" data-worker3="0" data-worker4="0" class="dropZone"></td>
+                    <td id="E4" data-tower="0" data-worker1="0" data-worker2="0" data-worker3="0" data-worker4="0" class="dropZone darkCell"></td>
+                    <td id="F4" data-tower="0" data-worker1="0" data-worker2="0" data-worker3="0" data-worker4="0" class="dropZone"></td>
+                    <th></th>
+                </tr>
+
+                <tr>
+                    <th>3</th>
+                    <td id="A3" data-tower="0" data-worker1="0" data-worker2="0" data-worker3="0" data-worker4="0" class="dropZone"></td>
+                    <td id="B3" data-tower="0" data-worker1="0" data-worker2="0" data-worker3="0" data-worker4="0" class="dropZone darkCell"></td>
+                    <td id="C3" data-tower="0" data-worker1="0" data-worker2="0" data-worker3="0" data-worker4="0" class="dropZone"></td>
+                    <td id="D3" data-tower="0" data-worker1="0" data-worker2="0" data-worker3="0" data-worker4="0" class="dropZone darkCell"></td>
+                    <td id="E3" data-tower="0" data-worker1="0" data-worker2="0" data-worker3="0" data-worker4="0" class="dropZone"></td>
+                    <td id="F3" data-tower="0" data-worker1="0" data-worker2="0" data-worker3="0" data-worker4="0" class="dropZone darkCell"></td>
+                    <th></th>
+                </tr>
+
+                <tr>
+                    <th>2</th>
+                    <td id="A2" data-tower="0" data-worker1="0" data-worker2="0" data-worker3="0" data-worker4="0" class="dropZone darkCell"></td>
+                    <td id="B2" data-tower="0" data-worker1="0" data-worker2="0" data-worker3="0" data-worker4="0" class="dropZone"></td>
+                    <td id="C2" data-tower="0" data-worker1="0" data-worker2="0" data-worker3="0" data-worker4="0" class="dropZone darkCell"></td>
+                    <td id="D2" data-tower="0" data-worker1="0" data-worker2="0" data-worker3="0" data-worker4="0" class="dropZone"></td>
+                    <td id="E2" data-tower="0" data-worker1="0" data-worker2="0" data-worker3="0" data-worker4="0" class="dropZone darkCell"></td>
+                    <td id="F2" data-tower="0" data-worker1="0" data-worker2="0" data-worker3="0" data-worker4="0" class="dropZone"></td>
+                    <th></th>
+                </tr>
+
+                <tr>
+                    <th>1</th>
+                    <td id="A1" data-tower="0" data-worker1="0" data-worker2="0" data-worker3="0" data-worker4="0" class="dropZone corner">
+                        <img src="images/puddle.png" alt="puddle" height="100" width="100">
+                    </td>
+                    <td id="B1" data-tower="0" data-worker1="0" data-worker2="0" data-worker3="0" data-worker4="0" class="dropZone darkCell"></td>
+                    <td id="C1" data-tower="0" data-worker1="0" data-worker2="0" data-worker3="0" data-worker4="0" class="dropZone"></td>
+                    <td id="D1" data-tower="0" data-worker1="0" data-worker2="0" data-worker3="0" data-worker4="0" class="dropZone darkCell"></td>
+                    <td id="E1" data-tower="0" data-worker1="0" data-worker2="0" data-worker3="0" data-worker4="0" class="dropZone"></td>
+                    <td id="F1" data-tower="0" data-worker1="0" data-worker2="0" data-worker3="0" data-worker4="0" class="dropZone darkCell">
+                        <img src="images/puddle.png" alt="puddle" height="100" width="100">
+                    </td>
+                    <th></th>
+                </tr>
+
+                <tr>
+                    <th></th>
+                    <th>A</th>
+                    <th>B</th>
+                    <th>C</th>
+                    <th>D</th>
+                    <th>E</th>
+                    <th>F</th>
+                    <th></th>
+                </tr>
+            </table>
+
+        </div>
+
+    </div>
+</body>
+
+</ht
