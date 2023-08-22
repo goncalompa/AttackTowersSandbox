@@ -88,6 +88,7 @@ th{
 }
 
 td{
+    /*position: relative;*/
     font-size: 0; /* removes space between img/the blocks */
     background-color: rgb(230, 250, 217);
     text-align: center;
@@ -96,6 +97,7 @@ td{
     height: 15vmin;
     border-spacing: 0px;
     padding: 5px;
+    z-index: -1;
 }
 
 td.corner {
@@ -104,10 +106,13 @@ td.corner {
     background-image: url('/images/puddle.png');
 }
 
-.figures, .workerOnField, .tokenOnField{
+.figures, .workerOnField{
     width: 5vmin;
 }
 
+.towerOnField {
+    width: 90%;
+}
 
 .toolbox{
     padding-right: 10px;

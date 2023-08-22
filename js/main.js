@@ -55,28 +55,49 @@ $(document).ready(function () {
         // Empty the cell
         $(tdToFill).empty();
         // Check and draw tower
-        if ($(tdToFill).attr("data-tower") == 1) {
-            $(tdToFill).prepend(imgTower);
+        if ($(tdToFill).attr("data-tower") != 0) {
+            var idName = $(tdToFill).attr("data-tower");
+            $(tdToFill).prepend(
+                $("#" + idName).clone().draggable({ helper: "clone" })
+                .attr("class", "towerOnField")
+                .css("position", "static")
+            );
         }
         // Draw the workers
         if ($(tdToFill).attr("data-worker1") != 0) {
             var idName = $(tdToFill).attr("data-worker1");
-            $(tdToFill).prepend($("#" + idName).clone().draggable({ helper: "clone" }).css("position", "static").attr("class", "workerOnField"));
+            $(tdToFill).prepend(
+                $("#" + idName).clone().draggable({ helper: "clone" })
+                .attr("class", "workerOnField")
+                .css("position", "static")
+            );
         }
 
         if ($(tdToFill).attr("data-worker2") != 0) {
             var idName = $(tdToFill).attr("data-worker2");
-            $(tdToFill).prepend($("#" + idName).clone().draggable({ helper: "clone" }).css("position", "static").attr("class", "workerOnField"));
+            $(tdToFill).prepend(
+                $("#" + idName).clone().draggable({ helper: "clone" })
+                .attr("class", "workerOnField")
+                .css("position", "static")
+            );
         }
 
         if ($(tdToFill).attr("data-worker3") != 0) {
             var idName = $(tdToFill).attr("data-worker3");
-            $(tdToFill).prepend($("#" + idName).clone().draggable({ helper: "clone" }).css("position", "static").attr("class", "workerOnField"));
+            $(tdToFill).prepend(
+                $("#" + idName).clone().draggable({ helper: "clone" })
+                .attr("class", "workerOnField")
+                .css("position", "static")
+            );
         }
 
         if ($(tdToFill).attr("data-worker4") != 0) {
             var idName = $(tdToFill).attr("data-worker4");
-            $(tdToFill).prepend($("#" + idName).clone().draggable({ helper: "clone" }).css("position", "static").attr("class", "workerOnField"));
+            $(tdToFill).prepend(
+                $("#" + idName).clone().draggable({ helper: "clone" })
+                .attr("class", "workerOnField")
+                .css("position", "static")
+            );
         }
     }
 
@@ -91,7 +112,7 @@ $(document).ready(function () {
     });
 
     // 
-    $("body").on("dragstart", ".workerOnField",
+    $("body").on("dragstart", ".workerOnField", ".towerOnField",
         function (event, ui) {
             droppedInCell = false;
             oldCell = $(this).parent().attr("id");
@@ -103,11 +124,12 @@ $(document).ready(function () {
     );
 
     // OnField things getting dragged out of the field get deleted
-    $("body").on("dragstop", ".workerOnField",
+    $("body").on("dragstop", ".workerOnField", ".towerOnField",
         function (event, ui) {
             if (!droppedInCell) {
                 // If workerOnField dropped outside delete
                 if (currentClass == "workerOnField") {
+
                     switch (currentWorker) {
                         case $("#" + oldCell).attr("data-worker1"):
                             $("#" + oldCell).attr("data-worker1", "0");
@@ -125,11 +147,19 @@ $(document).ready(function () {
 
                     log(turnNumber + ".\tremove " + currentWorker + " from " + oldCell);
                 }
+                // If towerOnField dropped outside delete
+                else if (currentClass == "towerOnField") {
+
+                    $("#" + oldCell).attr("data-tower", "0");
+
+                    log(turnNumber + ".\tremove " + currentTower + " from " + oldCell);
+                }
 
                 draw($("#" + oldCell));
-                oldCell = false;
-                currentClass = false;
-                currentWorker = false;
+                oldCell = null;
+                currentClass = null;
+                currentWorker = null;
+                currentTower = null;
             }
         }
     );
@@ -147,6 +177,7 @@ $(document).ready(function () {
             // If drag and dropped on corner cell
             if ($(this).hasClass("corner")) { return }
             
+            var tower = $(this).attr("data-tower");
             var dw1 = $(this).attr("data-worker1");
             var dw2 = $(this).attr("data-worker2");
             var dw3 = $(this).attr("data-worker3");
@@ -154,18 +185,17 @@ $(document).ready(function () {
 
             // Place new or existing worker
             if (currentWorker) {
-
-                if (currentTower) {
-                    
-                }
-                else {
-                    
-                }
-
                 $(this).attr("data-worker1", currentWorker);
 
                 if (!oldCell) {
                     log(turnNumber + ".\t" + currentWorker + " on " + $(this).attr("id"));
+                }
+            }
+            else if (currentTower) {
+                $(this).attr("data-tower", currentTower);
+
+                if (!oldCell) {
+                    log(turnNumber + ".\t" + currentTower + " on " + $(this).attr("id"));
                 }
             }
 
@@ -190,12 +220,22 @@ $(document).ready(function () {
                 log(turnNumber + ".\t" + currentWorker + " from " + oldCell + " to " + $(this).attr("id"));
 
                 draw($("#" + oldCell));
-            } 
+            }
+            else if (currentClass == "towerOnField") {
+
+                $("#" + oldCell).attr("data-tower", "0");
+
+                log(turnNumber + ".\t" + currentTower + " from " + oldCell + " to " + $(this).attr("id"));
+
+                draw($("#" + oldCell));
+            }
 
             // Draw the current cell new
             draw(this);
-            oldCell = false;
-            currentClass = false;
+            oldCell = null;
+            currentClass = null;
+            currentWorker = null;
+            currentTower = null;
         }
     });
 
