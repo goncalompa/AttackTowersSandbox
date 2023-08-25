@@ -54,10 +54,30 @@ $(document).ready(function () {
     function draw(tdToFill) {
         // Empty the cell
         $(tdToFill).empty();
+
+        // Add top, middle, bottom divs
+        let $top = $('<div>', { 'data-position': 'top' });
+        let $middle = $('<div>', { 'data-position': 'middle' });
+        let $bottom = $('<div>', { 'data-position': 'bottom' });
+
+        if ($(tdToFill).attr("data-tower") != 0) {
+            $(tdToFill).append($top);
+            $(tdToFill).append($middle);
+            $(tdToFill).append($bottom);
+        }
+        else {
+            if ($(tdToFill).attr("data-worker1") != 0 || $(tdToFill).attr("data-worker2") != 0) {
+                $(tdToFill).append($top);
+            }
+            if ($(tdToFill).attr("data-worker3") != 0 || $(tdToFill).attr("data-worker4") != 0) {
+                $(tdToFill).append($bottom);
+            }
+        }
+
         // Check and draw tower
         if ($(tdToFill).attr("data-tower") != 0) {
             var idName = $(tdToFill).attr("data-tower");
-            $(tdToFill).prepend(
+            $middle.append(
                 $("#" + idName).clone().draggable({ helper: "clone" })
                 .attr("class", "towerOnField")
                 .css("position", "static")
@@ -66,7 +86,7 @@ $(document).ready(function () {
         // Draw the workers
         if ($(tdToFill).attr("data-worker1") != 0) {
             var idName = $(tdToFill).attr("data-worker1");
-            $(tdToFill).prepend(
+            $top.append(
                 $("#" + idName).clone().draggable({ helper: "clone" })
                 .attr("class", "workerOnField")
                 .css("position", "static")
@@ -75,7 +95,7 @@ $(document).ready(function () {
 
         if ($(tdToFill).attr("data-worker2") != 0) {
             var idName = $(tdToFill).attr("data-worker2");
-            $(tdToFill).prepend(
+            $top.append(
                 $("#" + idName).clone().draggable({ helper: "clone" })
                 .attr("class", "workerOnField")
                 .css("position", "static")
@@ -84,7 +104,7 @@ $(document).ready(function () {
 
         if ($(tdToFill).attr("data-worker3") != 0) {
             var idName = $(tdToFill).attr("data-worker3");
-            $(tdToFill).prepend(
+            $bottom.append(
                 $("#" + idName).clone().draggable({ helper: "clone" })
                 .attr("class", "workerOnField")
                 .css("position", "static")
@@ -93,7 +113,7 @@ $(document).ready(function () {
 
         if ($(tdToFill).attr("data-worker4") != 0) {
             var idName = $(tdToFill).attr("data-worker4");
-            $(tdToFill).prepend(
+            $bottom.append(
                 $("#" + idName).clone().draggable({ helper: "clone" })
                 .attr("class", "workerOnField")
                 .css("position", "static")
@@ -115,7 +135,7 @@ $(document).ready(function () {
     $("body").on("dragstart", ".workerOnField", ".towerOnField",
         function (event, ui) {
             droppedInCell = false;
-            oldCell = $(this).parent().attr("id");
+            oldCell = $(this).parent().parent().attr("id");
             currentClass = $(this).attr("class");
             currentWorker = $(this).attr("data-worker");
             currentTower = $(this).attr("data-tower");
@@ -149,9 +169,7 @@ $(document).ready(function () {
                 }
                 // If towerOnField dropped outside delete
                 else if (currentClass == "towerOnField") {
-
                     $("#" + oldCell).attr("data-tower", "0");
-
                     log(turnNumber + ".\tremove " + currentTower + " from " + oldCell);
                 }
 
@@ -166,7 +184,7 @@ $(document).ready(function () {
 
     // Handle things getting dragged into cell a1, b1 ...
     $(".dropZone").droppable({
-        accept: ".figures, .workerOnField",
+        accept: ".figures, .workerOnField, .towerOnField",
         drop: function (event, ui) {
 
             droppedInCell = true;

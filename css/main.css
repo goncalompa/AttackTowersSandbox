@@ -64,7 +64,7 @@ p {
     flex-wrap: wrap;
 }
 
-table{
+table {
     cursor: default;
     border-collapse: collapse;
     border: 0.1vmin solid black;
@@ -75,6 +75,7 @@ table{
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    table-layout: fixed;
 }
 
 .darkCell{
@@ -89,10 +90,10 @@ th{
 
 td{
     /*position: relative;*/
-    font-size: 0; /* removes space between img/the blocks */
+    font-size: 0;
     background-color: rgb(230, 250, 217);
     text-align: center;
-    vertical-align: bottom;
+    vertical-align: middle;
     width: 15vmin;
     height: 15vmin;
     border-spacing: 0px;
@@ -101,6 +102,7 @@ td{
 }
 
 td.corner {
+    pointer-events: none !important;
     background-size: 100% 100%;
     background-repeat: no-repeat;
     background-image: url('/images/puddle.png');
@@ -140,4 +142,19 @@ td.corner {
 
 .hidden {
     display: none !important;
+}
+
+td div[data-position="top"] {
+    height: 6vmin;
+    width: 100%;
+}
+
+td div[data-position="middle"] {
+    height: 1vmin;
+    width: 100%;
+}
+
+td div[data-position="bottom"] {
+    height: 6vmin;
+    width: 100%;
 }
