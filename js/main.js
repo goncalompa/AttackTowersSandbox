@@ -1,9 +1,10 @@
-/* my attempt at creating a santorini sandbox -borisqwertz */
-// Wait for side ready
+
+/* Creating a Attack Towers SandBox */
+
+// Wait for site ready
 $(document).ready(function () {
 
-    var imgTower = '<img src="images/tower.svg" alt="tower" height="auto" width="100%" id="tower">';
-
+    var autoSetupSearch = "?B6-worker1=p1Pawn&C6-worker1=p1King&D6-worker1=p1Pawn&E6-worker1=p1Pawn&A5-tower=p1Tower&F5-tower=p1Tower&A4-tower=p1Tower&F4-tower=p1Tower&A3-tower=p2Tower&F3-tower=p2Tower&A2-tower=p2Tower&F2-tower=p2Tower&B1-worker1=p2Pawn&C1-worker1=p2Pawn&D1-worker1=p2King&E1-worker1=p2Pawn&p1=&p2=";
     var moveLog = $("#moveText").val(); // \n for linebreak
     var droppedInCell, oldCell, currentClass, currentWorker, currentTower;
     var turnNumber = 1;
@@ -13,7 +14,7 @@ $(document).ready(function () {
     drawBoardfromURL()
 
     $("#writeURLButton").click(function () { writeURL(); });
-    $("#loadBoardButton").click(function () { location.reload(); });
+    $("#autoSetupBoardButton").click(function () { location.href = location.pathname + autoSetupSearch });
     $("#resetButton").click(function () { window.history.replaceState({}, '', location.pathname); location.reload(); });
     $("#clearLogButton").click(function () { clearLog(); });
     $("#textURL").click(function () { this.select(); });
@@ -26,7 +27,7 @@ $(document).ready(function () {
 
     // If mouse button pressed on board do this
     $(".dropZone").mousedown(function () {
-        if ($(".workerOnField:hover").length > 0 || touchMove) { return }
+        if ($(".workerOnField:hover").length > 0 || $(".towerOnField:hover").length > 0 || touchMove) { return }
         draw(this);
     });
 
@@ -89,6 +90,7 @@ $(document).ready(function () {
             $top.append(
                 $("#" + idName).clone().draggable({ helper: "clone" })
                 .attr("class", "workerOnField")
+                .attr("data-position", "top")
                 .css("position", "static")
             );
         }
@@ -98,6 +100,7 @@ $(document).ready(function () {
             $top.append(
                 $("#" + idName).clone().draggable({ helper: "clone" })
                 .attr("class", "workerOnField")
+                .attr("data-position", "top")
                 .css("position", "static")
             );
         }
@@ -107,6 +110,7 @@ $(document).ready(function () {
             $bottom.append(
                 $("#" + idName).clone().draggable({ helper: "clone" })
                 .attr("class", "workerOnField")
+                .attr("data-position", "bottom")
                 .css("position", "static")
             );
         }
@@ -116,6 +120,7 @@ $(document).ready(function () {
             $bottom.append(
                 $("#" + idName).clone().draggable({ helper: "clone" })
                 .attr("class", "workerOnField")
+                .attr("data-position", "bottom")
                 .css("position", "static")
             );
         }
@@ -125,26 +130,43 @@ $(document).ready(function () {
     $(".figures").draggable({
         helper: "clone",
         start: function (event, ui) {
+            currentClass = null;
             currentWorker = $(this).attr("data-worker");
+            currentPosition = $(this).attr("data-position");
             currentTower = $(this).attr("data-tower");
-            console.log(currentWorker + "drag from toolbox started");
+            let name = this.hasAttribute('data-worker') ? $(this).attr("data-worker") : $(this).attr("data-tower");
+            console.log(name + " drag from toolbox started");
         }
     });
 
-    // 
-    $("body").on("dragstart", ".workerOnField", ".towerOnField",
+    // Drag start callback for worker/tower on field
+    $("body").on("dragstart", ".workerOnField",
         function (event, ui) {
             droppedInCell = false;
             oldCell = $(this).parent().parent().attr("id");
             currentClass = $(this).attr("class");
             currentWorker = $(this).attr("data-worker");
+            currentPosition = $(this).attr("data-position");
+            currentTower = null;
+            console.log("Drag " + currentWorker + " from field start old cell: " + oldCell);
+        }
+    );
+
+    // Drag start callback for tower on field
+    $("body").on("dragstart", ".towerOnField",
+        function (event, ui) {
+            droppedInCell = false;
+            oldCell = $(this).parent().parent().attr("id");
+            currentClass = $(this).attr("class");
+            currentWorker = null;
+            currentPosition = null;
             currentTower = $(this).attr("data-tower");
             console.log("Drag from field start old cell: " + oldCell);
         }
     );
 
     // OnField things getting dragged out of the field get deleted
-    $("body").on("dragstop", ".workerOnField", ".towerOnField",
+    $("body").on("dragstop", [".workerOnField",".towerOnField"],
         function (event, ui) {
             if (!droppedInCell) {
                 // If workerOnField dropped outside delete
@@ -194,59 +216,109 @@ $(document).ready(function () {
 
             // If drag and dropped on corner cell
             if ($(this).hasClass("corner")) { return }
+
+            let oldTower = $("#"+oldCell).attr("data-tower");
+            let oldDw1 = $("#"+oldCell).attr("data-worker1");
+            let oldDw2= $("#"+oldCell).attr("data-worker2");
+            let oldDw3 = $("#"+oldCell).attr("data-worker3");
+            let oldDw4 = $("#"+oldCell).attr("data-worker4");
             
-            var tower = $(this).attr("data-tower");
-            var dw1 = $(this).attr("data-worker1");
-            var dw2 = $(this).attr("data-worker2");
-            var dw3 = $(this).attr("data-worker3");
-            var dw4 = $(this).attr("data-worker4");
+            let tower = $(this).attr("data-tower");
+            let dw1 = $(this).attr("data-worker1");
+            let dw2 = $(this).attr("data-worker2");
+            let dw3 = $(this).attr("data-worker3");
+            let dw4 = $(this).attr("data-worker4");
 
             // Place new or existing worker
             if (currentWorker) {
-                $(this).attr("data-worker1", currentWorker);
+
+                if (currentPosition == 'bottom') { return }
+
+                if (dw1 == 0) {
+                    $(this).attr("data-worker1", currentWorker);
+                }
+                else if (dw2 == 0) {
+                    $(this).attr("data-worker2", currentWorker);
+                }
+                else {
+                    return;
+                }
+
+                // Handle dropped from oldCell/clear oldCell - Move existing worker
+                if (currentClass == "workerOnField") {
+                    if (currentPosition == "top") {
+                        if (currentWorker == oldDw1) {
+                            $("#" + oldCell).attr("data-worker1", "0");
+                        }
+                        else if (currentWorker == oldDw2) {
+                            $("#" + oldCell).attr("data-worker2", "0");
+                        }
+                    }
+                    else if (currentPosition == "bottom") {
+                        if (currentWorker == oldDw3) {
+                            $("#" + oldCell).attr("data-worker3", "0");
+                        }
+                        else if (currentWorker == oldDw4) {
+                            $("#" + oldCell).attr("data-worker4", "0");
+                        }
+                    }
+                }
 
                 if (!oldCell) {
                     log(turnNumber + ".\t" + currentWorker + " on " + $(this).attr("id"));
+                } else {
+                    log(turnNumber + ".\t" + currentWorker + " from " + oldCell + " to " + $(this).attr("id"));
                 }
             }
             else if (currentTower) {
+
+                if (tower != "0") { return }
+
+                // Do not allow players to move towers that have none or two pwans on top of it
+                // Only move tower if it is controlled by a single pawn
+                //if (currentClass == "towerOnField" && oldCell) {
+                //    if (oldDw1 == 0 && oldDw2 == 0) { return }
+                //    else if (oldDw1 != 0 && oldDw2 != 0) { return } 
+                //}
+
                 $(this).attr("data-tower", currentTower);
+
+                if (dw1 != 0 || dw2 != 0) {
+                    $(this).attr("data-worker1", 0);
+                    $(this).attr("data-worker2", 0);
+                    $(this).attr("data-worker3", dw1);
+                    $(this).attr("data-worker4", dw2);
+                }
+
+                if (oldDw1 != 0 || oldDw2 != 0) {
+                    $(this).attr("data-worker1", oldDw1);
+                    $(this).attr("data-worker2", oldDw2);
+                    $("#" + oldCell).attr("data-worker1", "0");
+                    $("#" + oldCell).attr("data-worker2", "0");
+                }
+
+                // Handle dropped from oldCell/clear oldCell - Move existing worker
+                if (currentClass == "towerOnField") {
+
+                    $("#" + oldCell).attr("data-tower", "0");
+
+                    if (oldDw3 != 0 || oldDw3 != 0) {
+                        $("#" + oldCell).attr("data-worker1", oldDw3);
+                        $("#" + oldCell).attr("data-worker2", oldDw4);
+                        $("#" + oldCell).attr("data-worker3", 0);
+                        $("#" + oldCell).attr("data-worker4", 0);
+                    }
+                }
 
                 if (!oldCell) {
                     log(turnNumber + ".\t" + currentTower + " on " + $(this).attr("id"));
+                } else {
+                    log(turnNumber + ".\t" + currentTower + " from " + oldCell + " to " + $(this).attr("id"));
                 }
             }
 
-            // Handle dropped from oldCell/clear oldCell - Move existing worker
-            if (currentClass == "workerOnField") {
-                
-                switch (currentWorker) {
-                    case $("#" + oldCell).attr("data-worker1"):
-                        $("#" + oldCell).attr("data-worker1", "0");
-                        break;
-                    case $("#" + oldCell).attr("data-worker2"):
-                        $("#" + oldCell).attr("data-worker2", "0");
-                        break;
-                    case $("#" + oldCell).attr("data-worker3"):
-                        $("#" + oldCell).attr("data-worker3", "0");
-                        break;
-                    case $("#" + oldCell).attr("data-worker4"):
-                        $("#" + oldCell).attr("data-worker4", "0");
-                        break;
-                }
-
-                log(turnNumber + ".\t" + currentWorker + " from " + oldCell + " to " + $(this).attr("id"));
-
-                draw($("#" + oldCell));
-            }
-            else if (currentClass == "towerOnField") {
-
-                $("#" + oldCell).attr("data-tower", "0");
-
-                log(turnNumber + ".\t" + currentTower + " from " + oldCell + " to " + $(this).attr("id"));
-
-                draw($("#" + oldCell));
-            }
+            // Draw old cell if elements moved between existing cells            
+            if (oldCell) { draw($("#"+oldCell)) }
 
             // Draw the current cell new
             draw(this);
@@ -254,6 +326,7 @@ $(document).ready(function () {
             currentClass = null;
             currentWorker = null;
             currentTower = null;
+            currentPosition = null;
         }
     });
 
@@ -266,10 +339,6 @@ $(document).ready(function () {
             switch (pair[0].slice(3)) {
                 case "tower":
                     $("#" + pair[0].slice(0, 2)).attr("data-tower", pair[1]);
-                    draw($("#" + pair[0].slice(0, 2)));
-                    break;
-                case "worker":
-                    $("#" + pair[0].slice(0, 2)).attr("data-worker", pair[1]);
                     draw($("#" + pair[0].slice(0, 2)));
                     break;
                 case "worker1":
@@ -303,7 +372,7 @@ $(document).ready(function () {
         window.history.replaceState({}, '', location.pathname);
 
         $(".dropZone").each(function (index) {
-            if ($(this).attr("data-tower") == "1") {
+            if ($(this).attr("data-tower") != 0) {
                 newParams.set($(this).attr("id") + "-tower", $(this).attr("data-tower"));
             }
             if ($(this).attr("data-worker1") != 0) {

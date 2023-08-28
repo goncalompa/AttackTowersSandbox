@@ -103,9 +103,9 @@ td{
 
 td.corner {
     pointer-events: none !important;
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
-    background-image: url('/images/puddle.png');
+    /*background-size: 100% 100%;*/
+    /*background-repeat: no-repeat;*/
+    /*background-image: url('/images/puddle.png');*/
 }
 
 .figures, .workerOnField{
@@ -113,7 +113,7 @@ td.corner {
 }
 
 .towerOnField {
-    width: 100%;
+    width: 13vmin;
 }
 
 .toolbox{
