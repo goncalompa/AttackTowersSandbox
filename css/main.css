@@ -89,7 +89,6 @@ th{
 }
 
 td{
-    /*position: relative;*/
     font-size: 0;
     background-color: rgb(230, 250, 217);
     text-align: center;
@@ -103,9 +102,10 @@ td{
 
 td.corner {
     pointer-events: none !important;
-    /*background-size: 100% 100%;*/
-    /*background-repeat: no-repeat;*/
-    /*background-image: url('/images/puddle.png');*/
+    background-size: 11vmin 11vmin;
+    background-position: 2vmin 2vmin;
+    background-repeat: no-repeat;
+    background-image: url('../images/puddle_semitransparent_50.png');
 }
 
 .figures, .workerOnField{
