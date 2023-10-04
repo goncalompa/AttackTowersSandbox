@@ -101,7 +101,7 @@ td{
 }
 
 td.corner {
-    pointer-events: none !important;
+    /*pointer-events: none !important;*/
     background-size: 11vmin 11vmin;
     background-position: 2vmin 2vmin;
     background-repeat: no-repeat;

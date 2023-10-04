@@ -6,7 +6,7 @@ $(document).ready(function () {
 
     var autoSetupSearch = "?B6-worker1=p1Pawn&C6-worker1=p1King&D6-worker1=p1Pawn&E6-worker1=p1Pawn&A5-tower=p1Tower&F5-tower=p1Tower&A4-tower=p1Tower&F4-tower=p1Tower&A3-tower=p2Tower&F3-tower=p2Tower&A2-tower=p2Tower&F2-tower=p2Tower&B1-worker1=p2Pawn&C1-worker1=p2Pawn&D1-worker1=p2King&E1-worker1=p2Pawn&p1=&p2=";
     var moveLog = $("#moveText").val(); // \n for linebreak
-    var droppedInCell, oldCell, currentClass, currentWorker, currentTower;
+    var droppedInCell, oldCell, currentClass, currentWorker, currentTower, draggedFromBottom;
     var turnNumber = 1;
     var touchSupp, touchMove;
 
@@ -142,12 +142,15 @@ $(document).ready(function () {
     // Drag start callback for worker/tower on field
     $("body").on("dragstart", ".workerOnField",
         function (event, ui) {
+
             droppedInCell = false;
             oldCell = $(this).parent().parent().attr("id");
+
             currentClass = $(this).attr("class");
             currentWorker = $(this).attr("data-worker");
             currentPosition = $(this).attr("data-position");
             currentTower = null;
+
             console.log("Drag " + currentWorker + " from field start old cell: " + oldCell);
         }
     );
@@ -155,12 +158,15 @@ $(document).ready(function () {
     // Drag start callback for tower on field
     $("body").on("dragstart", ".towerOnField",
         function (event, ui) {
+
             droppedInCell = false;
             oldCell = $(this).parent().parent().attr("id");
+
             currentClass = $(this).attr("class");
             currentWorker = null;
             currentPosition = null;
             currentTower = $(this).attr("data-tower");
+
             console.log("Drag from field start old cell: " + oldCell);
         }
     );
@@ -168,27 +174,48 @@ $(document).ready(function () {
     // OnField things getting dragged out of the field get deleted
     $("body").on("dragstop", [".workerOnField",".towerOnField"],
         function (event, ui) {
+
             if (!droppedInCell) {
+
+                let oldTower = $("#" + oldCell).attr("data-tower");
+                let oldDw1 = $("#" + oldCell).attr("data-worker1");
+                let oldDw2 = $("#" + oldCell).attr("data-worker2");
+                let oldDw3 = $("#" + oldCell).attr("data-worker3");
+                let oldDw4 = $("#" + oldCell).attr("data-worker4");
+
                 // If workerOnField dropped outside delete
                 if (currentClass == "workerOnField") {
 
-                    switch (currentWorker) {
-                        case $("#" + oldCell).attr("data-worker1"):
+                    if (currentPosition == 'top') {
+
+                        if (currentWorker == oldDw1) {
                             $("#" + oldCell).attr("data-worker1", "0");
-                            break;
-                        case $("#" + oldCell).attr("data-worker2"):
+                        }
+                        else if (currentWorker == oldDw2) {
                             $("#" + oldCell).attr("data-worker2", "0");
-                            break;
-                        case $("#" + oldCell).attr("data-worker3"):
+                        }
+                        else {
+                            return;
+                        }
+
+                    }
+                    else if (currentPosition == 'bottom') {
+
+                        if (currentWorker == oldDw3) {
                             $("#" + oldCell).attr("data-worker3", "0");
-                            break;
-                        case $("#" + oldCell).attr("data-worker4"):
+                        }
+                        else if (currentWorker == oldDw4) {
                             $("#" + oldCell).attr("data-worker4", "0");
-                            break;
+                        }
+                        else {
+                            return;
+                        }
+
                     }
 
                     log(turnNumber + ".\tremove " + currentWorker + " from " + oldCell);
                 }
+
                 // If towerOnField dropped outside delete
                 else if (currentClass == "towerOnField") {
                     $("#" + oldCell).attr("data-tower", "0");
@@ -200,7 +227,9 @@ $(document).ready(function () {
                 currentClass = null;
                 currentWorker = null;
                 currentTower = null;
+                currentPosition = null;
             }
+
         }
     );
 
@@ -215,7 +244,9 @@ $(document).ready(function () {
             if ($(this).attr("id") == oldCell) { return }
 
             // If drag and dropped on corner cell
-            if ($(this).hasClass("corner")) { return }
+            if ($(this).hasClass("corner")) {
+                if (currentTower) { return }
+            }
 
             let oldTower = $("#"+oldCell).attr("data-tower");
             let oldDw1 = $("#"+oldCell).attr("data-worker1");
@@ -232,35 +263,93 @@ $(document).ready(function () {
             // Place new or existing worker
             if (currentWorker) {
 
-                if (currentPosition == 'bottom') { return }
+                // if (currentPosition == 'bottom') { return }
 
-                if (dw1 == 0) {
-                    $(this).attr("data-worker1", currentWorker);
-                }
-                else if (dw2 == 0) {
-                    $(this).attr("data-worker2", currentWorker);
+                // Check if there is a tower
+                if (tower == '0') {
+
+                    if (dw1 == 0) {
+                        $(this).attr("data-worker1", currentWorker);
+                    }
+                    else if (dw2 == 0) {
+                        $(this).attr("data-worker2", currentWorker);
+                    }
+                    else {
+                        return;
+                    }
+
                 }
                 else {
-                    return;
+
+                    let pX = event.pageX;
+                    let pY = event.pageY;
+
+                    let targetRect = event.target.getBoundingClientRect();
+                    let targetHeight = targetRect.height;
+                    let targetTop = targetRect.top;
+                    let targetMiddle = targetTop + targetHeight / 2;
+                    let targetBottom = targetTop + targetHeight;
+
+                    let placedOnTop = pY <= (targetMiddle);
+                    let placedOnBottom = pY > (targetMiddle);
+
+                    // console.log(`Placed on top: ${placedOnTop}`);
+                    // console.log(`Placed on bottom: ${placedOnBottom}`);
+
+                    if (placedOnTop) {
+
+                        if (dw1 == 0) {
+                            $(this).attr("data-worker1", currentWorker);
+                        }
+                        else if (dw2 == 0) {
+                            $(this).attr("data-worker2", currentWorker);
+                        }
+                        else {
+                            return;
+                        }
+
+                    }
+                    else if (placedOnBottom) {
+
+                        if (dw3 == 0) {
+                            $(this).attr("data-worker3", currentWorker);
+                        }
+                        else if (dw4 == 0) {
+                            $(this).attr("data-worker4", currentWorker);
+                        }
+                        else {
+                            return;
+                        }
+
+                    }
+                    else {
+                        return;
+                    }
+
                 }
 
                 // Handle dropped from oldCell/clear oldCell - Move existing worker
                 if (currentClass == "workerOnField") {
+
                     if (currentPosition == "top") {
+
                         if (currentWorker == oldDw1) {
                             $("#" + oldCell).attr("data-worker1", "0");
                         }
                         else if (currentWorker == oldDw2) {
                             $("#" + oldCell).attr("data-worker2", "0");
                         }
+
                     }
                     else if (currentPosition == "bottom") {
+
                         if (currentWorker == oldDw3) {
                             $("#" + oldCell).attr("data-worker3", "0");
                         }
                         else if (currentWorker == oldDw4) {
                             $("#" + oldCell).attr("data-worker4", "0");
                         }
+
                     }
                 }
 
@@ -327,6 +416,7 @@ $(document).ready(function () {
             currentWorker = null;
             currentTower = null;
             currentPosition = null;
+            draggedFromBottom = null;
         }
     });
 
