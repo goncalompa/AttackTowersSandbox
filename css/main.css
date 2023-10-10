@@ -35,6 +35,7 @@ p {
     display: flex;
     flex-direction: row;
     gap: 10px;
+    flex-wrap: wrap;
 }
 
 .row::after {
