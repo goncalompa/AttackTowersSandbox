@@ -8,7 +8,6 @@ $(document).ready(function () {
     var moveLog = $("#moveText").val(); // \n for linebreak
     var droppedInCell, oldCell, currentClass, currentWorker, currentTower, draggedFromBottom;
     var turnNumber = 1;
-    var touchSupp, touchMove;
 
     // On new pageload draw the board with the params from the URL
     drawBoardfromURL()
@@ -27,7 +26,7 @@ $(document).ready(function () {
 
     // If mouse button pressed on board do this
     $(".dropZone").mousedown(function () {
-        if ($(".workerOnField:hover").length > 0 || $(".towerOnField:hover").length > 0 || touchMove) { return }
+        if ($(".workerOnField:hover").length > 0 || $(".towerOnField:hover").length > 0) { return }
         draw(this);
     });
 
@@ -487,41 +486,5 @@ $(document).ready(function () {
         // update the page's URL
         window.history.replaceState({}, '', `${location.pathname}?${newParams}`);
     }
-
-    /* Touch support */
-
-    $("#touchNo").click(function () {
-        touchSupp = 0, touchMove = 0, touchRemove = 0
-        $(".touchDiv").hide()
-    });
-    // for firefox
-    if ($("#touchNo").is(":checked")) { touchSupp = 0, touchMove = 0, touchRemove = 0, $(".touchDiv").hide() };
-
-    $("#touchYes").click(function () {
-        if (!(touchSupp)) {
-            touchSupp = 1;
-            touchBuild = 0;
-            touchDome = 0;
-            touchRemove = 0;
-            touchMove = 1;
-
-            $(".touchDiv").append(
-                $(document.createElement("button")).prop({
-                    type: "button",
-                    innerHTML: "move",
-                    id: "moveButton",
-                }).click(function () { touchRemove = 0, touchMove = 1, $("#moveButton").css("background-color", "yellow"), $("#domeButton").css("background-color", ""), $("#removeButton").css("background-color", ""), $("#buildButton").css("background-color", "") }),
-
-                $(document.createElement("button")).prop({
-                    type: "button",
-                    innerHTML: "remove",
-                    id: "removeButton"
-                }).click(function () { touchRemove = 1, touchMove = 0, $("#moveButton").css("background-color", ""), $("#domeButton").css("background-color", ""), $("#removeButton").css("background-color", "yellow"), $("#buildButton").css("background-color", "") }),
-
-            )
-            $("#moveButton").css("background-color", "yellow");
-        }
-    });
-
 
 });
